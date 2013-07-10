@@ -9,7 +9,7 @@
 
     "repository": {
       "type": "git",
-      "url": "https://github.com/orkel/grunt-perf.init"
+      "url": "https://github.com/orkel/grunt-perf.git"
     },
 
     "bugs": {
@@ -19,9 +19,16 @@
     "licenses": [{
         "type": "Apache-2.0",
         "url": "http://www.apache.org/licenses/LICENSE-2.0"
-    },
+    }],
 
     "devDependencies": {
-        "grunt": "~0.4.0"
+        "grunt-contrib-watch": "~0.4.0",
+        "grunt": "~0.4.0",
+        "express": "~3.2.2",
+        "socket.io": "~0.9.16",
+        "cloneextend": "0.0.3",
+
+        "express": "~3.2.2",
+        "grunt-express-server": "~0.4.1"
     }
 }
