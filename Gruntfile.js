@@ -7,7 +7,7 @@ module.exports = function( grunt ) {
 
         watch: {
             express: {
-                files:  [ "*.js" ],
+                files:  [ "**", "*" ],
                 tasks:  [ "express:dev" ],
                 options: {
                     nospawn: true //Without this option specified express won't be reloaded
@@ -18,7 +18,8 @@ module.exports = function( grunt ) {
         express: {
             dev: {
                 options: {
-                    script: "server.js"
+                    script: "server.js",
+                    port: 7000
                 }
             }
         }
