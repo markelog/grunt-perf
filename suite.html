@@ -3,6 +3,8 @@
 <head>
     <meta charset="utf-8">
     <title></title>
+
+    <script src="/dist.js"></script>
 </head>
 <body>
     {{html}}
@@ -19,24 +21,18 @@
             }
         });
 
-        suite.add({
-            name: "test",
-
-            fn: function() {
-                {{js}}
-            }
-        });
-
-        suite.on( "start", function() {
-            console.log(1);
-        });
-
-
-        suite.on( "complete", function() {
-            console.log(2);
-        });
+        suite.on( "start", message );
+        suite.on( "complete", message );
 
         suite.run();
+
+        function message( event ) {
+            var args = [].slice.call( arguments );
+
+            args.unshift( event.type, this );
+
+            alert( JSON.stringify( args ) );
+        }
     </script>
 </body>
 </html>

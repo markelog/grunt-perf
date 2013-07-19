@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+
+    <script src="dist.js"></script>
+</head>
+<body>
+    {{html}}
+
+    <script src="benchmark.js"></script>
+    <script>
+        var suite = new Benchmark.Suite();
+
+        suite.add({
+            name: "replaceWith",
+
+            fn: function() {
+                {{js}}
+            }
+        });
+
+        suite.on( "start", message );
+        suite.on( "complete", message );
+
+        suite.run();
+
+        function message( event ) {
+            var args = [].slice.call( arguments );
+
+            args.unshift( event.type, this );
+
+            alert( JSON.stringify( args ) );
+        }
+    </script>
+</body>
+</html>

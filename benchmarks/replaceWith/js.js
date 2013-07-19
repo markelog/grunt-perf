@@ -1,4 +1,5 @@
-var newDiv = document.createElement("div");
+var currentDiv = jQuery( document.getElementById( "div" ) ),
+    newDiv = document.createElement("div");
 
 currentDiv.replaceWith( newDiv );
-current( newDiv ).replaceWith( currentDiv );
+jQuery( newDiv ).replaceWith( currentDiv );
