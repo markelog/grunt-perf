@@ -1,12 +1,11 @@
 "use strict"
 
 module.exports = function( grunt ) {
-    var listen,
-
-        tmp = ".perf",
+    var tmp = ".perf",
 
         express = require( "express" ),
         phantomjs = require( "grunt-lib-phantomjs" ).init( grunt ),
+        git = require( "../lib/git" ),
 
         fs = require( "fs" ),
         path = require( "path" );
@@ -16,8 +15,10 @@ module.exports = function( grunt ) {
         grunt.log.oklns( "Test started" );
     });
 
-    grunt.registerTask( "perf", function() {
-        var suite,
+    grunt.registerTask( "perf", function( name ) {
+        var done = this.async(),
+
+            suite,
 
             options = this.options(),
             tests = {},
@@ -36,7 +37,6 @@ module.exports = function( grunt ) {
         grunt.file.mkdir( tmp );
 
         suite = grunt.file.read( __dirname + "/../suite/suite.html" );
-
         suite = suite.replace( "{{js}}", tests.replaceWith.js );
         suite = suite.replace( "{{html}}", tests.replaceWith.html );
 
@@ -48,69 +48,23 @@ module.exports = function( grunt ) {
 
         grunt.file.write( ".perf/index.html", suite );
 
-        this.async();
         server();
 
-        return;
-        var dist,
-            app = express(),
-            done = this.async(),
-            options = this.options();
-
-        dist = options.dist.split( "/" );
-        dist = "/dist/" + dist[ dist.length - 1 ];
-
-        app.get( "/", function( req, res ) {
-            index = index.replace( "{{html}}", html );
-            index = index.replace( "{{js}}", js );
-            index = index.replace( "{{dist}}", dist );
-
-            return res.send( index );
-        });
-
-        console.log(this.options());
-        return
-
-        var dist,
-            done = this.async(),
-            options = this.options();
-
-        dist = options.dist.split( "/" );
-        dist = "/dist/" + dist[ dist.length - 1 ];
-
         phantomjs.on( "complete", function( data, event ) {
-            if ( data[ 0 ].error ) {
-                grunt.log.error( data[ 0 ].error.message );
-            }
-
             grunt.log.ok( "Test finished", data );
             done();
         });
 
-        phantomjs.spawn( options.url, {
-            options: {}
+        phantomjs.spawn( "http://localhost:7000", {
+            options: {},
+
+            done: function() {
+                grunt.log.ok("finish")
+            }
         });
     });
 
     function server() {
-        var app = express();
-
-        if ( listen ) {
-            listen.close();
-            listen = undefined;
-        }
-
-        // app.get( "/", function( req, res ) {
-        //     index = index.replace( "{{html}}", html );
-        //     index = index.replace( "{{js}}", js );
-        //     index = index.replace( "{{dist}}", dist );
-
-        //     return res.send( index );
-        // });
-
-        app.use( express.static( path.resolve( ".perf" ) ) );
-        //app.use( "/static/", express.static( __dirname + "/../app/static" ) )
-
-        listen = app.listen( 7000 );
+        express().use( express.static( path.resolve( ".perf" ) ) ).listen( 7000 );
     }
 }
