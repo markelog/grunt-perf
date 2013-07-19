@@ -8,7 +8,7 @@ module.exports = function( grunt ) {
         watch: {
             express: {
                 files:  [ "**", "*" ],
-                tasks:  [ "express:dev" ],
+                tasks:  [ "run" ],
                 options: {
                     nospawn: true //Without this option specified express won't be reloaded
                 }
@@ -22,6 +22,13 @@ module.exports = function( grunt ) {
                     port: 7000
                 }
             }
+        },
+
+        perf: {
+            options: {
+                dist: "/Users/arkel/Workspace/perf/dist/jquery.js",
+                url: "http://arkel:7000/"
+            }
         }
     });
 
@@ -30,4 +37,8 @@ module.exports = function( grunt ) {
 
     grunt.registerTask( "default", [ "express", "watch" ] );
     grunt.registerTask( "server", "default" );
+
+    grunt.loadTasks( "tasks" );
+
+    grunt.registerTask( "run", [ "perf", "watch" ] );
 };
