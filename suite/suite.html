@@ -11,6 +11,7 @@
 
     <script src="benchmark.js"></script>
     <script>
+
         var suite = new Benchmark.Suite();
 
         suite.add({
@@ -18,7 +19,7 @@
 
             fn: function() {
                 {{js}}
-            }
+            },
         });
 
         suite.on( "start", message );
@@ -28,6 +29,8 @@
 
         function message( event ) {
             var args = [].slice.call( arguments );
+
+            console.log(this[0].hz);
 
             args.unshift( event.type, this );
 
