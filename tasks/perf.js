@@ -54,6 +54,10 @@ module.exports = function( grunt ) {
         var benchmarks;
 
         this.benchmarks = benchmarks = {};
+        this.templates = {
+            js: "",
+            html: ""
+        };
         this.options = options;
         this.reference = grunt.option( "reference" ) || grunt.option( "hash" ) ||
             grunt.option( "tag" ) || grunt.option( "branch" ) || "HEAD~1"
@@ -83,6 +87,23 @@ module.exports = function( grunt ) {
 
         listen: null,
 
+        params: function( type ) {
+            var data;
+
+            for ( var benchmark in this.benchmarks ) {
+                data = this.benchmarks[ benchmark ][ type ];
+
+                if ( type == "js" ) {
+                    this.templates.js += "suite.add(" + data + ");";
+
+                } else {
+                    this.templates.html += data;
+                }
+            }
+
+            return this.templates[ type ];
+        },
+
         prepare: function( dist ) {
             dist = dist || this.options.dist;
 
@@ -100,8 +121,9 @@ module.exports = function( grunt ) {
 
             suite = grunt.file.read( __dirname + "/../suite/suite.html" );
 
-            suite = suite.replace( "{{js}}", this.benchmarks.replaceWith.js );
-            suite = suite.replace( "{{html}}", this.benchmarks.replaceWith.html );
+
+            suite = suite.replace( "{{tests}}", this.params( "js" ) );
+            suite = suite.replace( "{{html}}", this.params( "html" ) );
 
             grunt.file.copy( dist, d );
 
@@ -116,7 +138,7 @@ module.exports = function( grunt ) {
 
         erenow: function( fn ) {
             var self = this,
-            	dist = app + "/" + this.options.dist;
+                dist = app + "/" + this.options.dist;
 
             exec( "cp -R * " + app, function() {
                 exec( "cp -R .git " + app, function() {
@@ -170,7 +192,7 @@ module.exports = function( grunt ) {
                     percentage = Math.round(1 - results[ 1 ] / results[ 0 ]) * 100;
 
                     if ( percentage >= 5 ) {
-                    	grunt.log.errorlns( benchmark + " became slower by " + percentage + "%" );
+                        grunt.log.errorlns( benchmark + " became slower by " + percentage + "%" );
                     }
                 }
             }
@@ -182,13 +204,13 @@ module.exports = function( grunt ) {
 
         checkout: function( fn ) {
             var self = this,
-            	dist = app + "/" + this.options.dist,
+                dist = app + "/" + this.options.dist,
                 buildTasks = this.options.buildTasks.join ? this.options.buildTasks.join( " " ) : this.options.buildTasks;
 
             exec( "git checkout -f " + this.reference, {
                 cwd: path.resolve( ".perf/app" )
             }, function() {
-            	grunt.file.delete( dist );
+                grunt.file.delete( dist );
 
                 exec( "grunt " + buildTasks, {
                     cwd: path.resolve( ".perf/app" )

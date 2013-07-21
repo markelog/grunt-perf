@@ -14,13 +14,7 @@
 
         var suite = new Benchmark.Suite();
 
-        suite.add({
-            name: "replaceWith",
-
-            fn: function() {
-                {{js}}
-            },
-        });
+        {{tests}}
 
         suite.on( "start", message );
         suite.on( "complete", message );
