@@ -62,6 +62,7 @@ module.exports = function( grunt ) {
         this.reference = grunt.option( "reference" ) || grunt.option( "hash" ) ||
             grunt.option( "tag" ) || grunt.option( "branch" ) || "HEAD~1"
 
+        grunt.file.delete( ".perf" )
 
         grunt.file.expand( options.benchmarks ).forEach(function( name ) {
             var benchmark = benchmarks[ name.split( "/" )[ 1 ] ] = {
@@ -120,7 +121,6 @@ module.exports = function( grunt ) {
             grunt.file.mkdir( app );
 
             suite = grunt.file.read( __dirname + "/../suite/suite.html" );
-
 
             suite = suite.replace( "{{tests}}", this.params( "js" ) );
             suite = suite.replace( "{{html}}", this.params( "html" ) );
