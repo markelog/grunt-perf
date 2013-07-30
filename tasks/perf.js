@@ -62,7 +62,9 @@ module.exports = function( grunt ) {
         this.reference = grunt.option( "reference" ) || grunt.option( "hash" ) ||
             grunt.option( "tag" ) || grunt.option( "branch" ) || "HEAD~1"
 
-        grunt.file.delete( ".perf" )
+        if ( grunt.file.exists( tmp ) ) {
+            grunt.file.delete( tmp );
+        }
 
         grunt.file.expand( options.benchmarks ).forEach(function( name ) {
             var benchmark = benchmarks[ name.split( "/" )[ 1 ] ] = {
