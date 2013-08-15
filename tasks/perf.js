@@ -6,6 +6,9 @@ module.exports = function( grunt ) {
 
         exec = require( "child_process" ).exec,
 
+        username = process.env.SAUCE_LABS_USERNAME,
+        key = process.env.SAUCE_LABS_KEY,
+
         express = require( "express" ),
         //phantomjs = require( "grunt-lib-phantomjs" ).init( grunt ),
 
@@ -19,7 +22,7 @@ module.exports = function( grunt ) {
     grunt.registerTask( "perf", function() {
         var template = grunt.file.read( __dirname + "/../suite/suite.html" ),
 
-            done = this.async(),
+            done = grunt.task.current.async(),
             options = this.options(),
 
             browsers = options.browsers,
@@ -40,11 +43,9 @@ module.exports = function( grunt ) {
             delete tests.benchmark;
 
             sauce.start( grunt, {
-                username: "markelog",
-                key: "dcf93013-0771-4075-a986-dee2c4d3a75d"
+                username: username,
+                key: key
             }, done );
-
-            console.log( sauce.on );
 
             server.start( browsers, tests, options.port, sauce );
 
@@ -53,8 +54,6 @@ module.exports = function( grunt ) {
             // })
 
             new Perf();
-
-            //done();
         }.bind( this ) );
     });
 
