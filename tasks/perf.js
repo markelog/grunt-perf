@@ -1,40 +1,47 @@
 module.exports = function( grunt ) {
     var perf, listen,
 
-        tmp = ".perf",
-        app = ".perf/app",
+        tmp = ".clone",
+        app = ".clone/app",
 
         exec = require( "child_process" ).exec,
 
-        username = process.env.SAUCE_LABS_USERNAME,
-        key = process.env.SAUCE_LABS_KEY,
+        username = process.env.SAUCE_USERNAME,
+        key = process.env.SAUCE_ACCESS_KEY,
 
         express = require( "express" ),
-        //phantomjs = require( "grunt-lib-phantomjs" ).init( grunt ),
 
         Perf = require( "../lib/perf" ),
         tests = require( "../lib/tests" ),
         server = require( "../lib/server" ),
         Sauce = require( "../lib/sauce" ),
+        utils = require( "../lib/utils" )( grunt );
 
         fs = require( "fs" );
 
     grunt.registerTask( "perf", function() {
-        var template = grunt.file.read( __dirname + "/../suite/suite.html" ),
+        var dir = __dirname + "/../";
+            template = grunt.file.read( dir + "suite/suite.html" ),
 
             done = grunt.task.current.async(),
             options = this.options(),
 
             browsers = options.browsers,
             dist = options.dist,
+            port = options.port || 7777,
 
             sauce = new Sauce;
+
+        tmp = dir + tmp;
+
+        grunt.option( "force", true );
 
         if ( grunt.file.exists( tmp ) ) {
             grunt.file.delete( tmp );
         }
 
-        grunt.file.copy( __dirname + "/../suite/benchmark.js", tmp + "/benchmark.js" );
+        utils.clone( options );
+        grunt.file.copy( dir + "/suite/benchmark.js", tmp + "/benchmark.js" );
 
         tests( grunt, options.benchmarks, function( tests ) {
             grunt.file.copy( dist, tmp + "/dist.js" );
@@ -42,18 +49,17 @@ module.exports = function( grunt ) {
 
             delete tests.benchmark;
 
+            server.start( browsers, tests, port, sauce );
+
             sauce.start( grunt, {
                 username: username,
-                key: key
+                key: key,
+                browsers: options.browsers,
+                port: port,
+                address: "localhost:7776"
             }, done );
 
-            server.start( browsers, tests, options.port, sauce );
-
-            // sauce.on( "connected", function() {
-            //     server.emit( "connected" );
-            // })
-
-            new Perf();
+            //new Perf();
         }.bind( this ) );
     });
 

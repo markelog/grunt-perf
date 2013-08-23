@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+
+    <script src="dist.js"></script>
+</head>
+<body>
+    <div id="fixture"></div>
+
+    <script src="benchmark.js"></script>
+    <script>
+
+        var suite = new Benchmark.Suite();
+
+        suite.add({                 "name":"replaceWith",                 "fn":function () {
+            currentDiv.replaceWith( newDiv );
+
+        },                 "setup":function () {
+            var currentDiv = jQuery( "<div/>" ).appendTo( "#placeholder" ),
+    newDiv = document.createElement( "div" );
+    
+        },                 "onComplete":function () {
+            document.getElementById( "fixture" ).innerHTML = "";
+        },                 "onStart":function () {
+            document.getElementById( "fixture" ).innerHTML = '"body"';
+        }            });suite.add({                 "name":"remove",                 "fn":function () {
+            div.remove();
+
+
+        },                 "setup":function () {
+            var div = jQuery( "<div/>" ).appendTo( "#placeholder" );
+
+        },                 "onComplete":function () {
+            document.getElementById( "fixture" ).innerHTML = "";
+        },                 "onStart":function () {
+            document.getElementById( "fixture" ).innerHTML = '"body"';
+        }            });
+
+        suite.on( "start", message );
+        suite.on( "complete", message );
+
+        suite.run();
+
+        function message( event ) {
+            var result,
+                args = [].slice.call( arguments );
+
+            args.unshift( event.type, this );
+            result = JSON.stringify( args[ 1 ] );
+
+            document.getElementById( "fixture" ).innerHTML = '<div id="done">' + result + '</div>';
+            window.results = result;
+        }
+    </script>
+</body>
+</html>
