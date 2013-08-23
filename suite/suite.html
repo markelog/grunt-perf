@@ -22,13 +22,14 @@
         suite.run();
 
         function message( event ) {
-            var args = [].slice.call( arguments );
-
-            console.log(this[0].hz);
+            var result,
+                args = [].slice.call( arguments );
 
             args.unshift( event.type, this );
+            result = JSON.stringify( args[ 1 ] );
 
-            alert( JSON.stringify( args ) );
+            document.getElementById( "fixture" ).innerHTML = '<div id="done">' + result + '</div>';
+            window.results = result;
         }
     </script>
 </body>

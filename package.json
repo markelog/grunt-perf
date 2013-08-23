@@ -21,7 +21,7 @@
         "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }],
 
-    "dependencies": {
+    "devDependencies": {
         "grunt": "~0.4.0",
 
         "grunt-express-server": "~0.4.1",
@@ -29,9 +29,11 @@
 
         "jade": "0.34.1",
         "jsdom": "0.8.2",
+        "benchmark": "~1.0.0",
 
         "express": "~3.2.2",
         "socket.io": "~0.9.16",
+        "cloneextend": "~0.0.3",
 
         "wd": "~0.0.26",
 
