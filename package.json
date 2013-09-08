@@ -24,15 +24,16 @@
     "devDependencies": {
         "grunt": "~0.4.0",
 
-        "grunt-express-server": "~0.4.1",
         "grunt-contrib-watch": "~0.4.0",
+        "grunt-contrib-jshint": "~0.6.4"
+    },
 
-        "jade": "0.34.1",
-        "jsdom": "0.8.2",
+    "dependencies": {
+        "jade": "~0.34.1",
+        "jsdom": "~0.8.2",
         "benchmark": "~1.0.0",
 
         "express": "~3.2.2",
-        "socket.io": "~0.9.16",
         "cloneextend": "~0.0.3",
 
         "wd": "~0.0.26",
