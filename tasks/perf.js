@@ -1,8 +1,5 @@
 module.exports = function( grunt ) {
-    var perf, listen,
-
-        tmp = ".clone",
-        app = ".clone/app",
+    var clonePath = ".clone",
 
         exec = require( "child_process" ).exec,
 
@@ -11,11 +8,8 @@ module.exports = function( grunt ) {
 
         express = require( "express" ),
 
-        Perf = require( "../lib/perf" ),
         tests = require( "../lib/tests" ),
-        server = require( "../lib/server" ),
         Sauce = require( "../lib/sauce" ),
-        utils = require( "../lib/utils" )( grunt );
 
         fs = require( "fs" );
 
@@ -32,34 +26,30 @@ module.exports = function( grunt ) {
 
             sauce = new Sauce;
 
-        tmp = dir + tmp;
+        clonePath = dir + clonePath;
 
         grunt.option( "force", true );
 
-        if ( grunt.file.exists( tmp ) ) {
-            grunt.file.delete( tmp );
+        if ( grunt.file.exists( clonePath ) ) {
+            grunt.file.delete( clonePath );
         }
 
-        utils.clone( options );
-        grunt.file.copy( dir + "/suite/benchmark.js", tmp + "/benchmark.js" );
+        grunt.file.copy( dir + "/suite/benchmark.js", clonePath + "/benchmark.js" );
 
         tests( grunt, options.benchmarks, function( tests ) {
-            grunt.file.copy( dist, tmp + "/dist.js" );
-            grunt.file.write( tmp + "/index.html", prepare( template, tests ) );
+            grunt.file.copy( dist, clonePath + "/dist.js" );
+            grunt.file.write( clonePath + "/index.html", prepare( template, tests ) );
 
             delete tests.benchmark;
 
-            server.start( browsers, tests, port, sauce );
+            express().use( express.static( clonePath ) ).listen( 9999 );
 
             sauce.start( grunt, {
                 username: username,
                 key: key,
                 browsers: options.browsers,
-                port: port,
-                address: "localhost:7776"
+                address: "http://127.0.0.1:9999/index.html"
             }, done );
-
-            //new Perf();
         }.bind( this ) );
     });
 
