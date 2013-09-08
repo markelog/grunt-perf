@@ -1,7 +1,7 @@
+"use strict";
+
 module.exports = function( grunt ) {
     var clonePath = ".clone",
-
-        exec = require( "child_process" ).exec,
 
         username = process.env.SAUCE_USERNAME,
         key = process.env.SAUCE_ACCESS_KEY,
@@ -9,24 +9,22 @@ module.exports = function( grunt ) {
         express = require( "express" ),
 
         tests = require( "../lib/tests" ),
-        Sauce = require( "../lib/sauce" ),
-
-        fs = require( "fs" );
+        Sauce = require( "../lib/sauce" );
 
     grunt.registerTask( "perf", function() {
-        var dir = __dirname + "/../";
+
+        var dir = __dirname + "/../",
             template = grunt.file.read( dir + "suite/suite.html" ),
 
             done = grunt.task.current.async(),
             options = this.options(),
 
-            browsers = options.browsers,
             dist = options.dist,
-            port = options.port || 7777,
 
             sauce = new Sauce;
 
         clonePath = dir + clonePath;
+
 
         grunt.option( "force", true );
 
@@ -62,5 +60,4 @@ module.exports = function( grunt ) {
 
         return suite.replace( "{{tests}}", data );
     }
-
-}
+};

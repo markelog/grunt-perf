@@ -7,9 +7,16 @@
     "unused": true,
     "strict": true,
     "trailing": true,
+    "supernew": true,
+    "expr": true,
 
-    "quotmark": "double",
+    "quotmark": false, // :(
+
+    "node": true,
+
     "latedef": "nofunc",
 
-    "node": true
+    "globals": {
+        "document": true
+    }
 }
