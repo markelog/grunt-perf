@@ -3,11 +3,13 @@
     "latedef": true,
     "noarg": true,
     "noempty": true,
-    "quotmark": "double",
     "undef": true,
     "unused": true,
     "strict": true,
     "trailing": true,
+
+    "quotmark": "double",
+    "latedef": "nofunc",
 
     "node": true
 }
