@@ -13,7 +13,7 @@ module.exports = function( grunt ) {
 
         jshint: {
             app: {
-                src: [ "lib/*.js", "tasks/*.js", "Grunfile.js" ],
+                src: [ "tasks/**/*.js", "tasks/*.js", "Grunfile.js" ],
                 options: {
                     jshintrc: ".jshintrc"
                 }

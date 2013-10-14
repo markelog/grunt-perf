@@ -50,10 +50,9 @@ Sauce.prototype.start = function ( grunt, options, done ) {
                 driver.get( address, function( error ) {
                     showError( error );
 
-                    console.log("");
                     grunt.log.ok( "Tests started for " + blue + name, browser.version, reset );
 
-                    driver.waitForElementById( "done", 5000, function( error ) {
+                    driver.waitForElementById( "done", 2000, function( error ) {
                         showError( error );
 
                         driver.elementById( "done", function( error, element ) {
@@ -71,8 +70,12 @@ Sauce.prototype.start = function ( grunt, options, done ) {
                                     }
                                 }
 
-                                finish( results );
                                 self.emit( "done", browser, results );
+
+                                if ( finish( browser, results ) ) {
+                                    self.emit( "all-done", finished );
+                                    quit( true );
+                                }
                             });
                         });
                     });
@@ -80,12 +83,13 @@ Sauce.prototype.start = function ( grunt, options, done ) {
             });
         });
 
-        function finish( result ) {
-            finished.push( result );
+        function finish( browser, results ) {
+            finished.push({
+                browser: browser,
+                results: results
+            });
 
-            if ( browsers.length == finished.length ) {
-                quit( true );
-            }
+            return browsers.length == finished.length;
         }
 
         function quit( isSuccessful ) {
@@ -115,7 +119,7 @@ Sauce.prototype.start = function ( grunt, options, done ) {
     }
 
     function configureTunnel( tunnel ) {
-        [ "write", "writeln", "error", "ok", "debug" ].forEach(function ( method ) {
+        [ "write", "writeln", "error", "ok", "debug" ].forEach(function( method ) {
             tunnel.on( "log:" + method, function ( text ) {
                 if ( text ) {
                     grunt.log[ method ]( text );

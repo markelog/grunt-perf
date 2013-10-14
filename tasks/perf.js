@@ -1,46 +1,49 @@
 "use strict";
 
 module.exports = function( grunt ) {
-    var clonePath = ".clone",
-
-        username = process.env.SAUCE_USERNAME,
+    var username = process.env.SAUCE_USERNAME,
         key = process.env.SAUCE_ACCESS_KEY,
 
         express = require( "express" ),
+        tmp = require( "temporary" ),
 
-        tests = require( "../lib/tests" ),
-        Sauce = require( "../lib/sauce" );
+        tests = require( "./lib/tests" ),
+        format = require( "./lib/format" ),
+        Sauce = require( "./lib/sauce" );
 
-    grunt.registerTask( "perf", function() {
-
+    grunt.registerMultiTask( "perf", function() {
         var dir = __dirname + "/../",
+            date = Date.now(),
             template = grunt.file.read( dir + "suite/suite.html" ),
 
             done = grunt.task.current.async(),
             options = this.options(),
 
+            dump = grunt.option( "dump" ),
+
             dist = options.dist,
+
+            path = new tmp.Dir().path,
 
             sauce = new Sauce;
 
-        clonePath = dir + clonePath;
-
-
         grunt.option( "force", true );
 
-        if ( grunt.file.exists( clonePath ) ) {
-            grunt.file.delete( clonePath );
+        grunt.file.copy( dir + "/suite/benchmark.js", path + "/benchmark.js" );
+
+        if ( dump ) {
+            sauce.on( "all-done", function( results ) {
+                grunt.file.write( dump, format( date, results ) );
+            });
         }
 
-        grunt.file.copy( dir + "/suite/benchmark.js", clonePath + "/benchmark.js" );
-
-        tests( grunt, options.benchmarks, function( tests ) {
-            grunt.file.copy( dist, clonePath + "/dist.js" );
-            grunt.file.write( clonePath + "/index.html", prepare( template, tests ) );
+        tests( grunt, this.filesSrc, function( tests ) {
+            grunt.file.copy( dist, path + "/dist.js" );
+            grunt.file.write( path + "/index.html", prepare( template, tests ) );
 
             delete tests.benchmark;
 
-            express().use( express.static( clonePath ) ).listen( 9999 );
+            express().use( express.static( path ) ).listen( 9999 );
 
             sauce.start( grunt, {
                 username: username,

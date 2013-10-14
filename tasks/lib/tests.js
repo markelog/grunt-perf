@@ -3,13 +3,11 @@
 var jade = require( "jade" ),
     jsdom = require( "jsdom" );
 
-module.exports = function( grunt, path, callback ) {
+module.exports = function( grunt, files, callback ) {
     var tests = [],
         i = 0,
         stringTests = "",
-        testsAmount = 0,
-
-        files = grunt.file.expand( path );
+        testsSum = 0;
 
     files.forEach(function( file ) {
         jade.renderFile( file, {}, function( err, html ) {
@@ -23,26 +21,31 @@ module.exports = function( grunt, path, callback ) {
 
     function generate() {
         jsdom.env( stringTests, [ "http://code.jquery.com/jquery.js" ], function ( errors, window ) {
-            var perfs = window.$( "perf" );
+            var modules = window.$( "module" );
 
-            testsAmount = perfs.length;
+            testsSum = window.$( "perf" ).length;
 
-            perfs.each(function() {
-                var rest = window.$( this ).find( "body, script" );
+            modules.each(function() {
+                var module = this.getAttribute( "name" ),
+                    perfs = window.$( this ).find( "perf" );
 
-                add( window.$( this ).add( rest ) );
+                perfs.each(function() {
+                    var rest = window.$( this ).find( "body, script" );
+
+                    add( module, window.$( this ).add( rest ) );
+                });
             });
         });
     }
 
-    function add( elements ) {
+    function add( module, elements ) {
         var name = elements.filter( "perf" ).attr( "name" ),
             body = elements.filter( "body" ).html(),
             runner = elements.filter( "script[runner]" ).html(),
             setupCode = elements.filter( "script[setup]" ).html(),
 
             benchmark = '{' +
-                'name:"' + name + '",' +
+                'name:"' + module + ": " + name + '",' +
                 'fn:' + fn( runner ) + ',' +
                 'setup:' + setup( setupCode ) + ',' +
                 'onComplete:' + onComplete() + ',' +
@@ -50,6 +53,7 @@ module.exports = function( grunt, path, callback ) {
             '}';
 
         tests.push({
+            module: module,
             name: name,
             body: body,
             script: runner,
@@ -58,7 +62,7 @@ module.exports = function( grunt, path, callback ) {
             benchmark: "suite.add(" + benchmark + ");",
         });
 
-        if ( testsAmount == tests.length ) {
+        if ( testsSum == tests.length ) {
             callback( tests );
         }
     }
